@@ -15,3 +15,7 @@ code {
 td {
   vertical-align: 'middle' !important;
 }
+
+.clickable {
+  cursor: pointer;
+}

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class LikeToggle extends Component {
 
   getLikeClass = () => {
-    return `fa fa-heart${this.props.isLiked ? '' : '-o'}`;
+    return `clickable fa fa-heart${this.props.isLiked ? '' : '-o'}`;
   }
 
   render() {

@@ -49,13 +49,11 @@ class Movies extends Component {
   };
 
   handleLikeToggle = (movie) => {
-    console.log('icon clicked', movie.isLiked);
     movie.isLiked = !movie.isLiked;
     this.setState({ movies: this.state.movies });
   };
 
   handleProgressbar = (movie) => {
-    console.log('progressbar clicked', movie.numberInStock);
     let movies = this.state.movies;
     let index = this.state.movies.indexOf(movie);
     this.state.movies[index].numberInStock = (movie.numberInStock > 0) ? this.state.movies[index].numberInStock - 1 : 10;
@@ -67,7 +65,6 @@ class Movies extends Component {
   }
 
   handleListgroup = (name) => {
-    console.log('list clicked', name);
     this.setState({ currentGenre: name, currentPage: 1 });
   }
 
@@ -76,22 +73,23 @@ class Movies extends Component {
   };
 
   handleSort = (sortColumn) => {
-    
     this.setState({ sortColumn });
   }
 
   getPagedData = () => {
-    const { pageSize, currentPage, movies: allMovies, genres, currentGenre, sortColumn } = this.state;
+    const { pageSize, currentPage, movies: allMovies, currentGenre, sortColumn } = this.state;
 
     let moviesFiltered = allMovies;
 
-    if (currentGenre !== 'All Genres') moviesFiltered = allMovies.filter(x => x.genre.name === currentGenre);
-
+    if (currentGenre !== 'All Genres') {
+      moviesFiltered = allMovies.filter(x => x.genre.name === currentGenre);
+    }
+    
     const moviesSorted = _.orderBy(moviesFiltered, [sortColumn.path], [sortColumn.order]);
-
+    
     const moviesPaginated = paginate(moviesSorted, currentPage, pageSize);
 
-    return {totalCount : moviesFiltered.length, data: moviesPaginated};
+    return { totalCount: moviesFiltered.length, data: moviesPaginated };
   }
 
   render() {

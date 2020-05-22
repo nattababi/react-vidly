@@ -5,18 +5,13 @@ import PropTypes from 'prop-types';
 class Pagination extends Component {
 
   render() {
-
     const { itemsCount, pageSize, currentPage, onPageChange } = this.props;
-
-    console.log(itemsCount, pageSize, currentPage);
-    //[1,2,3].map
-
     const pagesCount = Math.ceil(itemsCount / pageSize);
 
     if (pagesCount === 1) {
       return null;
     }
-    
+
     // [1..pagesCount].map
     const pages = _.range(1, pagesCount + 1);
 

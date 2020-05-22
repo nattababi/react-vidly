@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 class TableHeader extends Component {
-  state = {}
 
   renderSortIcon = column => {
     const { sortColumn } = this.props;
@@ -9,12 +8,13 @@ class TableHeader extends Component {
     if (sortColumn.order === 'asc') return <i className="fa fa-sort-asc"></i>
     return <i className="fa fa-sort-desc"></i>
   };
+
   raiseSort = path => {
 
     console.log('onSort', path);
     const sortColumn = { ...this.props.sortColumn };
 
-    if (sortColumn.path = path) {
+    if (sortColumn.path === path) {
       sortColumn.order = (sortColumn.order === 'asc') ? 'desc' : 'asc';
     }
     else {
@@ -23,14 +23,12 @@ class TableHeader extends Component {
     }
     this.props.onSort(sortColumn);
   };
-  //‰
-  render() {
 
-    console.log('columns header', this.props.columns)
+  render() {
     return (
       <thead>
         <tr>
-          {this.props.columns.map(column => <th className="clickable" key={column.path || column.key}
+          {this.props.columns.map(column => <th className="clickable" style={column.style} key={column.path || column.key}
             onClick={() => this.raiseSort(column.path)}>
             {column.label} {this.renderSortIcon(column)}
           </th>)}

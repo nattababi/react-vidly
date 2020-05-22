@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 class ProgressBar extends Component {
-  state = {}
   render() {
     return (
       <div onClick={this.props.onClick} className="progress">

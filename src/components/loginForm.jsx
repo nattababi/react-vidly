@@ -3,7 +3,8 @@ import Input from './input';
 
 class LoginForm extends Component {
   state = {
-    account: { username: '', password: '' }
+    account: { username: '', password: '' },
+    errors: {}
   };
 
   username = React.createRef();

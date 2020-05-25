@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import { getMovies } from '../services/fakeMovieService';
-import { getGenres } from '../services/fakeGenreService';
 import { getGenresExtended } from '../services/fakeGenreService';
-import { genres } from '../services/fakeGenreService';
 import Pagination from './pagination';
 import { prepareAndPaginate } from '../utils/paginate'
 import { paginate } from '../utils/paginate'
 import ListGroup from './listgroup';
 import MoviesTable from './moviesTable';
 import _ from 'lodash';
+import queryString from 'query-string';
 
 class Movies extends Component {
+
+  //unlisten = null;
+
   state = {
     movies: getMovies(),
     genres: getGenresExtended(),
@@ -20,25 +22,61 @@ class Movies extends Component {
     sortColumn: { path: "title", order: 'asc' }
   };
 
+  webHistoryListener = (location, action) => {
+    console.log(">>>>>>on route change");
+    console.log(location);
+    
+  }
+
+  // componentWillUnmount() {
+  //   //console.log('>>> COMPONENT WILL UNMOUNT');
+  //   //this.unlisten();
+  // }
+  
+  componentDidMount() {
+    
+    console.log('componentDidMount - MOVIES');
+    
+    //this.unlisten = this.props.history.listen(this.webHistoryListener);
+
+    const parsed = queryString.parse(this.props.location.search);
+
+    const newState = {};
+
+    if (parsed.page) {
+      newState.currentPage = Number(parsed.page);
+    };
+
+    if (parsed.filter) {
+      newState.currentGenre = parsed.filter;
+    }
+    else{
+      newState.currentGenre = 'All Genres';
+    }
+
+    if (parsed.sortBy && parsed.orderBy) {
+      newState.sortColumn = { path: parsed.sortBy, order: parsed.orderBy };
+    }
+
+    this.setState(newState);
+  }
+
   handleDelete = (movie) => {
 
     const { currentGenre, currentPage, pageSize } = this.state;
 
     const allMovies = this.state.movies.filter(x => x._id !== movie._id);
-    console.log('inside delete');
-
+    
     const moviesPaginated = prepareAndPaginate(allMovies, currentGenre, currentPage, pageSize);
 
     if (moviesPaginated.length === 0 && this.state.currentGenre !== 'All Genres') {
-      //console.log('-----setting all genres------------');
-      //this.setState({ movies: allMovies, currentGenre: 'All Genres', currentPage: 1 });
-      console.log('-----delete normal?------------');
+      console.log('-----delete normal------------');
       this.setState({ movies: allMovies });
     }
     else {
       if (this.state.currentPage > Math.ceil(allMovies.length / this.state.pageSize)) {
         console.log('-----change page------------');
-        console.log(this.state.currentPage, Math.ceil(moviesPaginated.length / this.state.pageSize))
+        //console.log(this.state.currentPage, Math.ceil(moviesPaginated.length / this.state.pageSize))
         this.setState({ movies: allMovies, currentPage: 1 });
       }
       else {
@@ -61,11 +99,35 @@ class Movies extends Component {
   };
 
   handlePageChange = (page) => {
-    this.setState({ currentPage: page });
+    //this.setState({ currentPage: page });
+
+    //preserve current query
+    let parsed = queryString.parse(this.props.location.search);
+    let newAddOn='';
+
+      if (parsed.page) {
+        parsed.page = page;
+      }
+      else{
+        //newAddOn = `&page=${page}`;
+        newAddOn = (!parsed.filter && !parsed.sortBy && !parsed.orderBy) ? `page=${page}` : `&page=${page}`
+      }
+
+    console.log ('newAddOn=', newAddOn);
+    console.log('history.push', `?${queryString.stringify(parsed)}${newAddOn}`);
+    this.props.history.push(`?${queryString.stringify(parsed)}${newAddOn}`); // with history
   }
 
   handleListgroup = (name) => {
     this.setState({ currentGenre: name, currentPage: 1 });
+    //
+    // if (name !== 'All Genres') {
+    //   this.props.history.push(`?filter=${name}`);
+    // }
+    // else{
+    //   //goto movies
+    //   this.props.history.push(`/movies`);
+    // }
   }
 
   handleSave = () => {
@@ -73,7 +135,26 @@ class Movies extends Component {
   };
 
   handleSort = (sortColumn) => {
+    
+    //console.log('sortColumn', sortColumn.path, sortColumn.order);
+
     this.setState({ sortColumn });
+
+    // this.setState({ currentPage: page });
+
+    // //preserve current query
+    // let parsed = queryString.parse(this.props.location.search);
+    // let newAddOn='';
+
+    //   if (parsed.page) {
+    //     parsed.page = page;
+    //   }
+    //   else{
+    //     newAddOn = (!parsed.filter && !parsed.sortBy && !parsed.orderBy) ? `page=${page}` : `&page=${page}`
+    //   }
+
+    // this.props.history.push(`?${queryString.stringify(parsed)}${newAddOn}`); // with history
+
   }
 
   getPagedData = () => {
@@ -84,9 +165,9 @@ class Movies extends Component {
     if (currentGenre !== 'All Genres') {
       moviesFiltered = allMovies.filter(x => x.genre.name === currentGenre);
     }
-    
+
     const moviesSorted = _.orderBy(moviesFiltered, [sortColumn.path], [sortColumn.order]);
-    
+
     const moviesPaginated = paginate(moviesSorted, currentPage, pageSize);
 
     return { totalCount: moviesFiltered.length, data: moviesPaginated };

@@ -1,8 +1,23 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 class Pagination extends Component {
+
+  componentDidUpdate(prevState, prevProps) {
+    //console.log('prevstate',prevState);
+    //console.log('prevprops',prevProps);
+    // we access props with this.props
+    // and state with this.state
+    
+    // prevState contains state before update
+    // prevProps contains props before update
+  }
+
+  componentDidMount() {
+    //console.log('mount - pagination');
+  }
 
   render() {
     const { itemsCount, pageSize, currentPage, onPageChange } = this.props;
@@ -20,7 +35,7 @@ class Pagination extends Component {
         <ul className="pagination justify-content-center pagination-sm">
           {pages.map(page => <li key={page}
             className={page === currentPage ? 'page-item active' : 'page-item'}>
-            <a className="page-link" onClick={() => onPageChange(page)}>{page}</a></li>)}
+            <Link to="" className="page-link" onClick={() => onPageChange(page)}>{page}</Link></li>)}
         </ul>
       </nav>
     );

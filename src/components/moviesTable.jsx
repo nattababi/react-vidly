@@ -10,7 +10,7 @@ class MoviesTable extends Component {
     path: 'title', label: 'Title', style: { minWidth: '120px' },
     content: movie => <Link to={`/movies/${movie._id}`}>{movie.title}</Link>
   },
-  { path: 'genre.name', label: 'Genre', style: { minWidth: '80px' } },
+  { path: 'genre.name', label: 'Genre', style: { minWidth: '40px' } },
   { path: 'numberInStock', label: 'Stock', style: { minWidth: '60px' } },
   { path: 'dailyRentalRate', label: 'Rate', style: { minWidth: '40px' } },
   {
@@ -30,6 +30,10 @@ class MoviesTable extends Component {
   //columns: array
   //sortColumn: object
   // onSort: function
+
+  componentDidMount() {
+    //console.log('mount - moviestable');
+  }
 
   render() {
     const { movies, onSort, sortColumn } = this.props;

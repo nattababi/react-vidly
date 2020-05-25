@@ -21,7 +21,7 @@ function App() {
         <Route path="/not-found" component={NotFound}/>
         <Route path="/login" component={LoginForm}/>
         <Redirect exact from="/" to="/movies"/>
-        {/* <Redirect to="/not-found"/> */}
+        <Redirect to="/not-found"/>
       </Switch>
     </main>
   );

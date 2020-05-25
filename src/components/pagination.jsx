@@ -35,7 +35,7 @@ class Pagination extends Component {
         <ul className="pagination justify-content-center pagination-sm">
           {pages.map(page => <li key={page}
             className={page === currentPage ? 'page-item active' : 'page-item'}>
-            <Link to="" className="page-link" onClick={() => onPageChange(page)}>{page}</Link></li>)}
+            <div className="page-link" onClick={() => onPageChange(page)}>{page}</div></li>)}
         </ul>
       </nav>
     );

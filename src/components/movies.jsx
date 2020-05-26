@@ -23,9 +23,7 @@ class Movies extends Component {
   };
 
   webHistoryListener = (location, action) => {
-    console.log(">>>>>> on route change, do nothing");
-    console.log('location', location);
-
+    
     this.customUpdateStatus(location);
 
   }
@@ -47,10 +45,6 @@ class Movies extends Component {
 
   customUpdateStatus = (location) => {
 
-    console.log('>>>> inside custom update status, update status!');
-    //?page=2
-    console.log('this.props.location.search', location.search);
-
     const parsed = queryString.parse(location.search);
 
     const newState = {};
@@ -58,7 +52,7 @@ class Movies extends Component {
     if (parsed.page) {
       newState.currentPage = Number(parsed.page);
     }
-    else{
+    else {
       newState.currentPage = 1;
     };
 
@@ -114,34 +108,37 @@ class Movies extends Component {
   };
 
   handlePageChange = (page) => {
-    
+
     //preserve current query
     let parsed = queryString.parse(this.props.location.search);
-    let newAddOn = '';
 
-    if (parsed.page) {
-      parsed.page = page;
-    }
-    else {
-      //newAddOn = `&page=${page}`;
-      newAddOn = (!parsed.filter && !parsed.path && !parsed.order) ? `page=${page}` : `&page=${page}`
-    }
+    parsed.page = page;
 
-    const url = `?${queryString.stringify(parsed)}${newAddOn}`;
+    const url = `?${queryString.stringify(parsed)}`;
     console.log('history.push', url);
     this.props.history.push(url); // with history
   }
 
   handleListgroup = (name) => {
-    this.setState({ currentGenre: name, currentPage: 1 });
-    
+
+    let parsed = queryString.parse(this.props.location.search);
+
+    //preserve changes
     if (name !== 'All Genres') {
-      this.props.history.push(`?filter=${name}`);
+      parsed.filter = name;
     }
-    else{
-      //goto movies
-      this.props.history.push(`/movies`);
+    else {
+      delete parsed.filter;
     }
+
+    // set page to 1 when switching genres
+    if (parsed.page) {
+      parsed.page = 1;
+    }
+
+    const url = `?${queryString.stringify(parsed)}`;
+    this.props.history.push(url); // with history
+
   }
 
   handleSave = () => {
@@ -150,25 +147,13 @@ class Movies extends Component {
 
   handleSort = (sortColumn) => {
 
-    console.log('handlesort-sortColumn.path,order', sortColumn.path, sortColumn.order);
-
-
-    this.setState({ sortColumn });
-
     //preserve current query
     let parsed = queryString.parse(this.props.location.search);
-    let newAddOn='';
+    
+    parsed.path = sortColumn.path;
+    parsed.order = sortColumn.order;
 
-    if (parsed.path) {
-        parsed.path = sortColumn.path;
-        parsed.order = sortColumn.order;
-      }
-      else{
-        newAddOn = (!parsed.filter && !parsed.page) ?
-          `path=${sortColumn.path}&order=${sortColumn.order}` : `&path=${sortColumn.path}&order=${sortColumn.order}`
-      }
-
-    this.props.history.push(`?${queryString.stringify(parsed)}${newAddOn}`); // with history
+    this.props.history.push(`?${queryString.stringify(parsed)}`); // with history
 
   }
 

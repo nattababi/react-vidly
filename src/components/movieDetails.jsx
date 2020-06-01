@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import NewMovieForm from './newMovieForm';
+import { getMovie } from '../services/fakeMovieService';
+import NotFound from './notFound';
 
 class MovieDetails extends Component {
   state = {}
@@ -11,12 +14,32 @@ class MovieDetails extends Component {
   };
 
   render() {
-    return (
-      <div>
-        <h1>Movie Details - {this.props.match.params.id}</h1>
-        <button className="btn btn-primary" onClick={this.handleSave}>Save</button>
-      </div>
-    );
+
+    //find movie with the given Id
+    const id = this.props.match.params.id;
+    const movieInDb = getMovie(id);
+
+    if (movieInDb) {
+      //console.log('movie is found');
+      return (
+        <NewMovieForm
+          title={movieInDb.title}
+          genre={movieInDb.genre}
+          numberInStock={movieInDb.numberInStock}
+          dailyRentalRate={movieInDb.dailyRentalRate}
+        />
+      );
+    }
+    else {
+      //redirect to not_found page
+      //this.props.history.push('/not-found'); // with history
+      return(
+        <NotFound/>
+      );
+
+    }
+
+
   }
 }
 

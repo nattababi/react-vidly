@@ -23,19 +23,21 @@ class Movies extends Component {
   };
 
   webHistoryListener = (location, action) => {
-    
-    this.customUpdateStatus(location);
+    console.log('HISTORY Event:', location, action);
 
+    if (location.pathname === '/movies') {
+      this.customUpdateStatus(location);
+    }
   }
 
   componentWillUnmount() {
-    //console.log('>>> COMPONENT WILL UNMOUNT');
+    console.log('>>> COMPONENT WILL UNMOUNT');
     this.unlisten();
   }
 
   componentDidMount() {
 
-    //console.log('componentDidMount - MOVIES');
+    console.log('MOVIES ==> componentDidMount');
 
     //bind event
     this.unlisten = this.props.history.listen(this.webHistoryListener);
@@ -44,6 +46,7 @@ class Movies extends Component {
   }
 
   customUpdateStatus = (location) => {
+    console.log('MOVIES ==> update status called!!!');
 
     const parsed = queryString.parse(location.search);
 
@@ -115,7 +118,6 @@ class Movies extends Component {
     parsed.page = page;
 
     const url = `?${queryString.stringify(parsed)}`;
-    console.log('history.push', url);
     this.props.history.push(url); // with history
   }
 
@@ -149,7 +151,7 @@ class Movies extends Component {
 
     //preserve current query
     let parsed = queryString.parse(this.props.location.search);
-    
+
     parsed.path = sortColumn.path;
     parsed.order = sortColumn.order;
 
@@ -173,6 +175,11 @@ class Movies extends Component {
     return { totalCount: moviesFiltered.length, data: moviesPaginated };
   }
 
+  handleNewMovie = () => {
+    //redirect to /movies/new
+    this.props.history.push('/movies/new');
+  }
+
   render() {
 
     const { pageSize, currentPage, genres, currentGenre, sortColumn } = this.state;
@@ -184,6 +191,7 @@ class Movies extends Component {
     return (
       <React.Fragment>
         <button onClick={this.handleSave} className="btn btn-primary m-2">Save all</button>
+        <button onClick={this.handleNewMovie} className="btn btn-primary m-2">New movie</button>
         <table className="table table-borderless">
           <tbody>
             <tr>

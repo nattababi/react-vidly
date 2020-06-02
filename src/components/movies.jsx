@@ -5,6 +5,7 @@ import Pagination from './pagination';
 import { prepareAndPaginate } from '../utils/paginate'
 import { paginate } from '../utils/paginate'
 import ListGroup from './listgroup';
+import SearchBox from './searchbox';
 import MoviesTable from './moviesTable';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -189,7 +190,12 @@ class Movies extends Component {
     //render from all movies array and update status
     const allMovies = getMovies()
     const moviesFiltered = allMovies.filter(x => x.title.toLowerCase().search(input.value.toLowerCase()) !== -1);
-    this.setState({ movies: moviesFiltered, currentSearch: input.value, currentGenre: '' });
+    this.setState({
+                  movies: moviesFiltered,
+                  currentSearch: input.value,
+                  currentGenre: '',
+                  currentPage: 1
+                });
   }
   render() {
 
@@ -213,12 +219,7 @@ class Movies extends Component {
               </td>
               <td>
                 <p> Showing {result.totalCount} movies in the database</p>
-                {/* Search form */}
-                <input
-                  className="form-control m-2"
-                  type="text"
-                  placeholder="Search"
-                  aria-label="Search"
+                <SearchBox
                   onChange={this.handleSearch} />
                 <MoviesTable
                   movies={result.data}

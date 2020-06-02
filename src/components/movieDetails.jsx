@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import NewMovieForm from './newMovieForm';
-import { getMovie } from '../services/fakeMovieService';
+import { getMovie, getMovies } from '../services/fakeMovieService';
 import NotFound from './notFound';
 
 class MovieDetails extends Component {
@@ -19,20 +19,29 @@ class MovieDetails extends Component {
     const id = this.props.match.params.id;
     const movieInDb = getMovie(id);
 
+    console.log(movieInDb);
+
     if (movieInDb) {
       //console.log('movie is found');
       return (
         <NewMovieForm
+          _id={movieInDb._id}
           title={movieInDb.title}
           genre={movieInDb.genre}
           numberInStock={movieInDb.numberInStock}
           dailyRentalRate={movieInDb.dailyRentalRate}
+          history={this.props.history}
         />
       );
     }
     else {
+
+      // const movies = getMovies();
+      // console.log(movies);
+      
       //redirect to not_found page
       //this.props.history.push('/not-found'); // with history
+      
       return(
         <NotFound/>
       );

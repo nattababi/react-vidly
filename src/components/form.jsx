@@ -11,6 +11,7 @@ class Form extends Component {
 
   validate = () => {
     const options = { abortEarly: false };
+
     const { error } = Joi.validate(this.state.data, this.schema, options);
 
     if (!error) {
@@ -52,6 +53,7 @@ class Form extends Component {
     const errorMessage = this.validateProperty(input);
     
     if (errorMessage) {
+      console.log('VALIDATION ERROR');
       errors[input.name] = errorMessage;
     }
     else {

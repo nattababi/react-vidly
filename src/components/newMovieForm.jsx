@@ -6,7 +6,7 @@ import * as genresAPI from '../services/fakeGenreService';
 
 class NewMovieForm extends Form {
   state = {
-    data: { title: '', genre: '', numberInStock: '', rate: '' },
+    data: { title: '', genre: '', numberInStock: '', rate: '', _id: '' },
     errors: {}
   };
 
@@ -16,7 +16,8 @@ class NewMovieForm extends Form {
     title: Joi.string().required().label('Title'),
     genre: Joi.string().required().label('Genre'),
     numberInStock: Joi.number().min(0).max(100).required().label('Number In Stock'),
-    rate: Joi.number().min(0).max(10).required().label('Daily Rental Rate')
+    rate: Joi.number().min(0).max(10).required().label('Daily Rental Rate'),
+    _id: Joi.string().allow('')
   }
 
   constructor(props) {
@@ -27,6 +28,7 @@ class NewMovieForm extends Form {
       //console.log('>>>>>>>MOVIE UPDATE', this.props.title);
       
       //update properties and status      
+      this.state.data._id = this.props._id;
       this.state.data.title = this.props.title;
       this.state.data.genre = this.props.genre.name;
       this.state.data.numberInStock = this.props.numberInStock;
@@ -38,18 +40,15 @@ class NewMovieForm extends Form {
     }
   }
 
-  componentDidMount() {
-  //update status when properties exists
-  }
-
   doSubmit = () => {
-    //console.log('Done!!!');
-    const { title, genre, numberInStock, rate } = this.state.data;
+    console.log('Ready to save');
+    const { title, genre, numberInStock, rate, _id } = this.state.data;
 
     //find id for genre
     const genreObj = genresAPI.genres.find(g => g.name === genre);
 
     const movie = {
+      _id: _id,
       title: title,
       genreId: genreObj._id,
       numberInStock: numberInStock,

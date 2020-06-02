@@ -19,11 +19,12 @@ class Movies extends Component {
     currentPage: 1,
     pageSize: 4,
     currentGenre: "All Genres",
-    sortColumn: { path: "title", order: 'asc' }
+    sortColumn: { path: "title", order: 'asc' },
+    currentSearch: ''
   };
 
   webHistoryListener = (location, action) => {
-    console.log('HISTORY Event:', location, action);
+    //console.log('HISTORY Event:', location, action);
 
     if (location.pathname === '/movies') {
       this.customUpdateStatus(location);
@@ -46,7 +47,7 @@ class Movies extends Component {
   }
 
   customUpdateStatus = (location) => {
-    console.log('MOVIES ==> update status called!!!');
+    console.log('MOVIES ==> update status called');
 
     const parsed = queryString.parse(location.search);
 
@@ -88,7 +89,6 @@ class Movies extends Component {
     else {
       if (this.state.currentPage > Math.ceil(allMovies.length / this.state.pageSize)) {
         console.log('-----change page------------');
-        //console.log(this.state.currentPage, Math.ceil(moviesPaginated.length / this.state.pageSize))
         this.setState({ movies: allMovies, currentPage: 1 });
       }
       else {
@@ -123,6 +123,10 @@ class Movies extends Component {
 
   handleListgroup = (name) => {
 
+    // clear current search and return all movies array
+    const allMovies = getMovies();
+    this.setState({ movies: allMovies, currentSearch: '' });
+
     let parsed = queryString.parse(this.props.location.search);
 
     //preserve changes
@@ -140,7 +144,6 @@ class Movies extends Component {
 
     const url = `?${queryString.stringify(parsed)}`;
     this.props.history.push(url); // with history
-
   }
 
   handleSave = () => {
@@ -164,7 +167,7 @@ class Movies extends Component {
 
     let moviesFiltered = allMovies;
 
-    if (currentGenre !== 'All Genres') {
+    if (currentGenre !== 'All Genres' && currentGenre !== '') {
       moviesFiltered = allMovies.filter(x => x.genre.name === currentGenre);
     }
 
@@ -180,11 +183,19 @@ class Movies extends Component {
     this.props.history.push('/movies/new');
   }
 
+  handleSearch = ({ currentTarget: input }) => {
+    //disable selected genre
+    //update corresponding variable in data
+    //render from all movies array and update status
+    const allMovies = getMovies()
+    const moviesFiltered = allMovies.filter(x => x.title.toLowerCase().search(input.value.toLowerCase()) !== -1);
+    this.setState({ movies: moviesFiltered, currentSearch: input.value, currentGenre: '' });
+  }
   render() {
 
     const { pageSize, currentPage, genres, currentGenre, sortColumn } = this.state;
 
-    if (this.state.movies.length === 0) return <div>There are no movies in the database</div>;
+    if (this.state.movies.length === 0 && this.state.currentSearch === '') return <div>There are no movies in the database</div>;
 
     const result = this.getPagedData();
 
@@ -202,6 +213,13 @@ class Movies extends Component {
               </td>
               <td>
                 <p> Showing {result.totalCount} movies in the database</p>
+                {/* Search form */}
+                <input
+                  className="form-control m-2"
+                  type="text"
+                  placeholder="Search"
+                  aria-label="Search"
+                  onChange={this.handleSearch} />
                 <MoviesTable
                   movies={result.data}
                   sortColumn={sortColumn}

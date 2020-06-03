@@ -90,10 +90,6 @@ class Form extends Component {
 
   renderDropdown(name, label, data, value) {
 
-    console.log('dropdown ready to render');
-    //get value if parameter exists
-    //this.state.data[name] = value;
-    
     const { errors } = this.state;
     
     return <Dropdown

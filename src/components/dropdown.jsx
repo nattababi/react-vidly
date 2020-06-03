@@ -11,9 +11,10 @@ class Dropdown extends Component {
         {...rest}
         className="form-control"
         id={name}
-        name={name}>
-        <option disabled selected> -- select an option -- </option>
-        {data.map(x => <option selected={ value === x ? "selected" : ""} key={x}>{x}</option>)}
+        name={name}
+        value={ value !== "" ? value : "-- select an option --"}>
+        <option disabled={true}>-- select an option --</option>
+        {data.map(x => <option key={x}>{x}</option>)}
       </select>
     </div>);
   }

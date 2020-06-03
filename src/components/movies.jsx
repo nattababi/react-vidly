@@ -220,7 +220,7 @@ class Movies extends Component {
               <td>
                 <p> Showing {result.totalCount} movies in the database</p>
                 <SearchBox
-                  onChange={this.handleSearch} />
+                  onChange={this.handleSearch} value={this.state.currentSearch}/>
                 <MoviesTable
                   movies={result.data}
                   sortColumn={sortColumn}

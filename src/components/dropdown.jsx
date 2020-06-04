@@ -7,14 +7,14 @@ class Dropdown extends Component {
 
     return (<div className="form-group">
       <label htmlFor="sel1">{label}</label>
-      <select 
+      <select
         {...rest}
         className="form-control"
         id={name}
         name={name}
-        value={ value !== "" ? value : "-- select an option --"}>
-        <option disabled={true}>-- select an option --</option>
-        {data.map(x => <option key={x}>{x}</option>)}
+        value={value || "empty"}>
+        <option disabled={true} value="empty">-- select an option --</option>
+        {data.map(x => <option key={x.value} value={x.value}>{x.label}</option>)}
       </select>
     </div>);
   }

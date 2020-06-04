@@ -1,23 +1,8 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 
 class Pagination extends Component {
-
-  componentDidUpdate(prevState, prevProps) {
-    //console.log('prevstate',prevState);
-    //console.log('prevprops',prevProps);
-    // we access props with this.props
-    // and state with this.state
-    
-    // prevState contains state before update
-    // prevProps contains props before update
-  }
-
-  componentDidMount() {
-    //console.log('mount - pagination');
-  }
 
   render() {
     const { itemsCount, pageSize, currentPage, onPageChange } = this.props;

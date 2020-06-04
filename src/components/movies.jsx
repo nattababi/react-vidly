@@ -5,7 +5,7 @@ import Pagination from './pagination';
 import { prepareAndPaginate } from '../utils/paginate'
 import { paginate } from '../utils/paginate'
 import ListGroup from './listgroup';
-import SearchBox from './searchbox';
+import Input from './input';
 import MoviesTable from './moviesTable';
 import _ from 'lodash';
 import queryString from 'query-string';
@@ -53,6 +53,8 @@ class Movies extends Component {
     const parsed = queryString.parse(location.search);
 
     const newState = {};
+
+    newState.currentSearch = parsed.search;
 
     if (parsed.page) {
       newState.currentPage = Number(parsed.page);
@@ -125,9 +127,6 @@ class Movies extends Component {
   handleListgroup = (name) => {
 
     // clear current search and return all movies array
-    const allMovies = getMovies();
-    this.setState({ movies: allMovies, currentSearch: '' });
-
     let parsed = queryString.parse(this.props.location.search);
 
     //preserve changes
@@ -160,16 +159,15 @@ class Movies extends Component {
     parsed.order = sortColumn.order;
 
     this.props.history.push(`?${queryString.stringify(parsed)}`); // with history
-
   }
 
   getPagedData = () => {
-    const { pageSize, currentPage, movies: allMovies, currentGenre, sortColumn } = this.state;
-
-    let moviesFiltered = allMovies;
+    const { pageSize, currentPage, movies: allMovies, currentGenre, sortColumn, currentSearch } = this.state;
+    
+    let moviesFiltered = currentSearch ? allMovies.filter(x => x.title.toLowerCase().includes(currentSearch.toLowerCase())) : allMovies;
 
     if (currentGenre !== 'All Genres' && currentGenre !== '') {
-      moviesFiltered = allMovies.filter(x => x.genre.name === currentGenre);
+      moviesFiltered = moviesFiltered.filter(x => x.genre.name === currentGenre);
     }
 
     const moviesSorted = _.orderBy(moviesFiltered, [sortColumn.path], [sortColumn.order]);
@@ -185,18 +183,23 @@ class Movies extends Component {
   }
 
   handleSearch = ({ currentTarget: input }) => {
-    //disable selected genre
-    //update corresponding variable in data
-    //render from all movies array and update status
-    const allMovies = getMovies()
-    const moviesFiltered = allMovies.filter(x => x.title.toLowerCase().search(input.value.toLowerCase()) !== -1);
-    this.setState({
-                  movies: moviesFiltered,
-                  currentSearch: input.value,
-                  currentGenre: '',
-                  currentPage: 1
-                });
+    //preserve current query
+    let parsed = queryString.parse(this.props.location.search);
+
+    if (input.value) {
+      parsed.search = input.value;
+      if (parsed.page) {
+        delete parsed.page;// = 1;
+      }
+    }
+    else {
+      delete parsed.search;
+    }
+
+    const url = `?${queryString.stringify(parsed)}`;
+    this.props.history.push(url); // with history
   }
+
   render() {
 
     const { pageSize, currentPage, genres, currentGenre, sortColumn } = this.state;
@@ -219,8 +222,8 @@ class Movies extends Component {
               </td>
               <td>
                 <p> Showing {result.totalCount} movies in the database</p>
-                <SearchBox
-                  onChange={this.handleSearch} value={this.state.currentSearch}/>
+                <Input placeholder="Search"
+                  onChange={this.handleSearch} value={this.state.currentSearch} />
                 <MoviesTable
                   movies={result.data}
                   sortColumn={sortColumn}

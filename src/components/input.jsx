@@ -10,6 +10,7 @@ class Input extends Component {
         <label htmlFor={this.props.name}>{this.props.label}</label>
         <input
           {...rest}
+          value={''}
           name={name}
           id={name}
           className="form-control" />

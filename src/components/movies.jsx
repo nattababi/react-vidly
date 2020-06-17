@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { getMovies } from '../services/fakeMovieService';
-import { getGenresExtended } from '../services/fakeGenreService';
+import { getMovies, deleteMovie } from '../services/movieService';
+import { getGenresExtended } from '../services/genreService';
 import Pagination from './pagination';
 import { prepareAndPaginate } from '../utils/paginate'
 import { paginate } from '../utils/paginate'
@@ -9,14 +9,15 @@ import Input from './input';
 import MoviesTable from './moviesTable';
 import _ from 'lodash';
 import queryString from 'query-string';
+import { toast } from 'react-toastify';
 
 class Movies extends Component {
 
   unlisten = null;
 
   state = {
-    movies: getMovies(),
-    genres: getGenresExtended(),
+    movies: [],
+    genres: [],
     currentPage: 1,
     pageSize: 4,
     currentGenre: "All Genres",
@@ -37,9 +38,12 @@ class Movies extends Component {
     this.unlisten();
   }
 
-  componentDidMount() {
+  async componentDidMount() {
 
     console.log('MOVIES ==> componentDidMount');
+
+    this.state.genres = await getGenresExtended();
+    this.state.movies = await getMovies();
 
     //bind event
     this.unlisten = this.props.history.listen(this.webHistoryListener);
@@ -77,11 +81,13 @@ class Movies extends Component {
     this.setState(newState);
   }
 
-  handleDelete = (movie) => {
+  handleDelete = async (movie) => {
+
+    const originalMovies = this.state.movies;
 
     const { currentGenre, currentPage, pageSize } = this.state;
 
-    const allMovies = this.state.movies.filter(x => x._id !== movie._id);
+    const allMovies = originalMovies.filter(x => x._id !== movie._id);
 
     const moviesPaginated = prepareAndPaginate(allMovies, currentGenre, currentPage, pageSize);
 
@@ -98,6 +104,16 @@ class Movies extends Component {
         console.log('-----delete normal------------');
         this.setState({ movies: allMovies });
       }
+    }
+
+    try{
+      await deleteMovie(movie._id);
+    }
+    catch (ex) {
+      if (ex.response && ex.response.status === 404){
+            toast.error('This movie has already been deleted.');
+      }
+      this.setState({movies : originalMovies});
     }
   };
 
@@ -146,9 +162,19 @@ class Movies extends Component {
     this.props.history.push(url); // with history
   }
 
-  handleSave = () => {
+  handleSave = async () => {
     console.log(this.state.movies);
+    const p = await getGenresExtended();
+    console.log('MY GENRES EXTENDED', p);
+    const p2 = await getMovies();
+    console.log('MY MOVIES', p2);
   };
+
+  // handleSave = () => {
+  //   console.log(this.state.movies);
+  //   const p = getGenresEx();
+  //   console.log('My TEST', p);
+  // };
 
   handleSort = (sortColumn) => {
 
@@ -163,7 +189,7 @@ class Movies extends Component {
 
   getPagedData = () => {
     const { pageSize, currentPage, movies: allMovies, currentGenre, sortColumn, currentSearch } = this.state;
-    
+
     let moviesFiltered = currentSearch ? allMovies.filter(x => x.title.toLowerCase().includes(currentSearch.toLowerCase())) : allMovies;
 
     if (currentGenre !== 'All Genres' && currentGenre !== '') {

@@ -1,9 +1,9 @@
 import React from 'react';
-import { getMovie } from '../services/fakeMovieService';
+import { getMovie, saveMovie } from '../services/movieService';
+import * as genresAPI from '../services/genreService';
+import { ToastContainer } from 'react-toastify';
 import Form from './form';
 import Joi from 'joi-browser';
-import { saveMovie } from '../services/fakeMovieService';
-import * as genresAPI from '../services/fakeGenreService';
 
 class MovieDetails extends Form {
 
@@ -12,17 +12,17 @@ class MovieDetails extends Form {
     errors: {}
   };
 
-  genres = genresAPI.getGenres();
+  genres = [];
 
   schema = {
-    title: Joi.string().required().label('Title'),
+    title: Joi.string().min(5).required().label('Title'),
     genreId: Joi.string().required().label('Genre'),
     numberInStock: Joi.number().min(0).max(100).required().label('Number In Stock'),
     dailyRentalRate: Joi.number().min(0).max(10).required().label('Daily Rental Rate'),
     _id: Joi.string().allow('')
   }
 
-  doSubmit = () => {
+  doSubmit = async() => {
     const { title, genreId, numberInStock, dailyRentalRate: rate, _id } = this.state.data;
 
     const movie = {
@@ -33,21 +33,43 @@ class MovieDetails extends Form {
       dailyRentalRate: rate
     };
 
-    const newMovie = saveMovie(movie);
-
+    try{
+      const newMovie = await saveMovie(movie);
+    }
+    catch (ex){
+      if (ex.response && ex.response.status === 404) {
+        alert('This post has already been deleted');
+      }
+      console.error('ERROR!!!', ex);
+    }
     //redirect to /movies
     this.props.history.push('/movies');
   }
 
-  componentDidMount() {
+  async componentDidMount() {
 
+    this.genres = await genresAPI.getGenres();
     let movieId = this.props.match.params.id;
 
     if (movieId && movieId !== 'new') {
       //find movie in a database
-      const movieInDb = getMovie(movieId);
-
-      if (movieInDb) {
+      console.log('trying...')
+      let movieInDb = {};
+      let operationSuccess = true;
+      try{
+        movieInDb = await getMovie(movieId);
+      }
+      catch(ex){
+        if (ex.response && ex.response.status === 404){
+          operationSuccess = false;
+        }
+      }
+      
+      if (!operationSuccess) {
+        //redirect to not-found
+        this.props.history.replace('/not-found');
+      }
+      else{
         //fill properties
         const data = {};
         data._id = movieInDb._id;
@@ -57,11 +79,6 @@ class MovieDetails extends Form {
         data.dailyRentalRate = movieInDb.dailyRentalRate;
         this.setState({ data });
       }
-      else {
-        //redirect to not_found page
-        this.props.history.replace('/not-found')
-      }
-
     }
   }
 
@@ -72,6 +89,7 @@ class MovieDetails extends Form {
     return (
       <div>
         <h1>Movie Form</h1>
+        <ToastContainer />
         <form onSubmit={this.handleSubmit}>
           {this.renderInput('title', 'Title')}
           {this.renderDropdown('genreId', 'Genre', genreList, this.state.data.genreId)}

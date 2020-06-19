@@ -10,10 +10,10 @@ import NotFound from './components/notFound';
 import LoginForm from './components/loginForm';
 import RegisterForm from './components/registerForm';
 import Logout from './components/logout';
-import auth from './services/authServices';
+import ProtectedRoute from './components/protectedRoute';
+import auth from './services/authService';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
-
 
 class App extends Component {
 
@@ -22,16 +22,23 @@ class App extends Component {
   componentDidMount() {
     const user = auth.getCurrentUser();
     this.setState({ user });
+    console.log('CDM', user);
   }
 
   render() {
+    const { user } = this.state;
+    console.log('RENDER USER', user);
     return (
       <main className="container">
         <ToastContainer />
-        <NavBar user={this.state.user} />
+        <NavBar user={user} />
         <Switch>
-          <Route path="/movies/:id" component={MovieDetails} />
-          <Route path="/movies" component={Movies} />
+          <ProtectedRoute 
+            path="/movies/:id"
+            component={MovieDetails}
+          />
+          <Route path="/movies"
+            render={props => <Movies {...props} user={user} />} />
           <Route path="/customers" component={Customers} />
           <Route path="/rentals" component={Rentals} />
           <Route path="/not-found" component={NotFound} />

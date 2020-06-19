@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 class NavBar extends Component {
   state = {}
   render() {
-    console.log(this.props.user);
     return (
       <nav className="navbar navbar-expand-md navbar-light" style={{ backgroundColor: '#e3f2fd' }}>
         <Link className="navbar-brand" to="/">Vidly</Link>

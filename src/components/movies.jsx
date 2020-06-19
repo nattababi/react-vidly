@@ -230,14 +230,19 @@ class Movies extends Component {
 
     const { pageSize, currentPage, genres, currentGenre, sortColumn } = this.state;
 
+    const { user } = this.props;
+    
     if (this.state.movies.length === 0 && this.state.currentSearch === '') return <div>There are no movies in the database</div>;
 
     const result = this.getPagedData();
 
+    console.log('RENDER MOVIES', user);
+    
     return (
+      
       <React.Fragment>
         <button onClick={this.handleSave} className="btn btn-primary m-2">Save all</button>
-        <button onClick={this.handleNewMovie} className="btn btn-primary m-2">New movie</button>
+        {user && <button onClick={this.handleNewMovie} className="btn btn-primary m-2">New movie</button>}
         <table className="table table-borderless">
           <tbody>
             <tr>
@@ -251,6 +256,7 @@ class Movies extends Component {
                 <Input placeholder="Search"
                   onChange={this.handleSearch} value={this.state.currentSearch} />
                 <MoviesTable
+                  user={user}
                   movies={result.data}
                   sortColumn={sortColumn}
                   onLikeClick={this.handleLikeToggle}

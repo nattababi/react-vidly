@@ -25,7 +25,7 @@ class MoviesTable extends Component {
       now={movie.numberInStock}
       onClick={() => this.props.onProgressClick(movie)} />, style: { width: '200px' }
   },
-  { key: "delete", content: movie => <button onClick={() => this.props.onMovieDelete(movie)} className="btn btn-danger">Delete</button> }
+  { key: "delete", content: movie => this.props.user && <button onClick={() => this.props.onMovieDelete(movie)} className="btn btn-danger">Delete</button>}
   ];
   //columns: array
   //sortColumn: object
@@ -37,7 +37,7 @@ class MoviesTable extends Component {
 
   render() {
     const { movies, onSort, sortColumn } = this.props;
-
+    console.log('RENDER MOVIES TABLE', this.props.user);
     return (
       <Table columns={this.columns} sortColumn={sortColumn} data={movies} onSort={onSort} />
     );

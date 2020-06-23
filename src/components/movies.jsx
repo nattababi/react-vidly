@@ -232,7 +232,7 @@ class Movies extends Component {
 
     const { user } = this.props;
     
-    if (this.state.movies.length === 0 && this.state.currentSearch === '') return <div>There are no movies in the database</div>;
+    //if (this.state.movies.length === 0 && this.state.currentSearch === '') return <div>There are no movies in the database</div>;
 
     const result = this.getPagedData();
 

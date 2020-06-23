@@ -1,8 +1,6 @@
 import axios from "axios";
-//import auth from './authService';
-//import logger from "./logService";
-//import { toast } from "react-toastify";
 
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
 axios.interceptors.response.use(null, error => {
   const expectedError =

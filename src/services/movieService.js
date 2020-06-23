@@ -1,9 +1,7 @@
 import * as genresAPI from "./fakeGenreService.js";
 import http from "./httpService";
-import { apiUrl } from "../config.json";
-// import 'react-toastify/dist/ReactToastify.css';
 
-const apiMovies = apiUrl + '/movies';
+const apiMovies = '/movies';
 
 function MovieUrl(id){
   return `${apiMovies}/${id}`
